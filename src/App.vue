@@ -1,32 +1,60 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-app-bar
+      app
+      color="primary"
+      dark
+    >
+      <div class="d-flex justify-center">
+        <v-toolbar-title>
+          <router-link to="/" tag="button"><h1>Stock Trader</h1></router-link>
+        </v-toolbar-title>
+        
+      </div>
+      <v-spacer></v-spacer>
+      <div v-if="!user">
+        <v-btn :to="{ name: 'Signup'}" text >Signup</v-btn>
+        <v-btn :to="{ name: 'Signin'}" text > Sign in </v-btn>
+        
+      </div>
+      <v-btn v-if="user" text @click="logout">Logout</v-btn>
+
+    </v-app-bar>
+
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+  </v-app>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import HelloWorld from './components/HelloWorld';
+import { mapGetters } from 'vuex'
 
-#nav {
-  padding: 30px;
-}
+export default {
+  name: 'App',
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+  components: {
+    HelloWorld,
+  },
+  computed: {
+    ...mapGetters({
+      user: 'getUser'
+    })
+  },
+  methods: {
+    logout () {
+      this.$store.dispatch('logout')
+        .then(res => {
+          console.log(this.user)
+          this.$router.push('/signin')
+          })
+    }
+  },
+  created () {
+    // console.log('app created')
+    // console.log(localStorage.getItem('user'))
+    this.$store.dispatch('tryLogin')
+  }
 }
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+</script>
